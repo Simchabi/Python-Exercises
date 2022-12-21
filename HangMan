@@ -1,0 +1,181 @@
+
+count=1
+secret_word=" "
+old_letters = []
+
+def Welcomeprint():
+    HANGMAN_ASCII_ART="Welcome to the game Hangman"+"""
+  _    _                                         
+ | |  | |                                        
+ | |__| | __ _ _ __   __ _ _ __ ___   __ _ _ __  
+ |  __  |/ _` | '_ \ / _` | '_ ` _ \ / _` | '_ \ 
+ | |  | | (_| | | | | (_| | | | | | | (_| | | | |
+ |_|  |_|\__,_|_| |_|\__, |_| |_| |_|\__,_|_| |_|
+                      __/ |                      
+                     |___/
+"""
+    print (HANGMAN_ASCII_ART)
+
+
+
+def choose_word(file_path, index):
+    my_string=[]
+    my_file=open(file_path,"r")
+    for line in my_file:
+        for word in line.split():
+           # if word not in my_string:
+            my_string.append(word)
+    if index<len(my_string):
+        choose_word=my_string.pop(index)
+    else:
+         choose_word=my_string.pop(0)
+    return choose_word
+
+
+
+
+
+ 
+HANGMAN_PHOTOS = {1: """
+    x-------x
+""", 2: """
+    x-------x
+    |
+    |
+    |
+    |
+    |
+""", 3: """ 
+    x-------x
+    |       |
+    |       0
+    |
+    |
+    |
+""", 4: """
+    x-------x
+    |       |
+    |       0
+    |       |
+    |
+    |
+""", 5: """
+    x-------x
+    |       |
+    |       0
+    |      /|\
+    |
+    |
+""", 6:  """
+    x-------x
+    |       |
+    |       0
+    |      /|\
+    |      /
+    |
+""", 7: """
+    x-------x
+    |       |
+    |       0
+    |      /|\
+    |      / \
+    |
+"""}
+
+
+def print_hangman(num_of_tries):
+    for i in HANGMAN_PHOTOS.keys():
+        if i==num_of_tries:
+            print(HANGMAN_PHOTOS.get(i))
+            break
+                       
+
+
+def check_valid_input(letter_gussed,old_letter_gussed):
+    lower_letter=letter_gussed.lower()
+
+    if len(lower_letter)>1:
+        return False
+    if not(lower_letter.isalpha()):
+        return False
+    if lower_letter in old_letter_gussed:
+        return False
+    elif (len(lower_letter)==1)and((lower_letter>'a')or(lower_letter<'z'))and lower_letter not in old_letter_gussed:
+        return True
+
+
+def try_update_letter_guessed(letter_guessed, old_letters_guessed,count):
+    list_to_str=" "
+    str_with_arrows=" "
+    if check_valid_input(letter_guessed,old_letters_guessed):
+        old_letters_guessed+=letter_guessed
+        if letter_guessed in secret_word:
+            print(show_hidden_word(secret_word,old_letters))
+            return True
+        else:
+            count+=1
+            print_hangman(count)
+            print(show_hidden_word(secret_word,old_letters))
+            return False
+    else:
+        print("X")
+        map(lambda x: x.lower(), old_letters_guessed)
+        sorted_list = sorted(old_letters_guessed)
+        list_to_str += list_to_str.join(sorted_list)
+        str_with_arrows += '->'.join(f'{list_to_str[i:i + 2]}' for i in range(0, len(list_to_str), 2))
+        print(str_with_arrows)
+
+        #return False
+        return True
+    
+    
+def show_hidden_word(secret_word, old_letters_guessed):
+    word=["_"]*len(secret_word)
+    i=0
+    for index in old_letters_guessed:
+        if index in secret_word:
+            for char in secret_word:
+                i+=1
+                if index==char:
+                    word[i-1]=index
+        
+        i=0
+    return word
+
+
+def user_won():
+    word = show_hidden_word(secret_word, old_letters)
+    str = ""
+    for ele in word:
+        str += ele
+    if secret_word == str:
+        print("\nYou won the game!! ")
+        return True
+    return False
+
+
+
+
+Welcomeprint()
+input_file=input("Please enter file path: ")
+input_index=int(input("Please enter a index: "))
+secret_word=choose_word(input_file,input_index)
+print(secret_word)
+print_hangman(count)
+
+print("- "*len(secret_word))
+
+while 1:
+    if count==7:
+        print("LOSE :( ")
+        break
+    if user_won():
+        print("WIN")
+        break
+    else:
+        input_letter=input("Guess a letter: ")
+        if not try_update_letter_guessed(input_letter,old_letters,count):
+            count+=1
+
+
+
