@@ -160,7 +160,6 @@ Welcomeprint()
 input_file=input("Please enter file path: ")
 input_index=int(input("Please enter a index: "))
 secret_word=choose_word(input_file,input_index)
-print(secret_word)
 print_hangman(count)
 
 print("- "*len(secret_word))
